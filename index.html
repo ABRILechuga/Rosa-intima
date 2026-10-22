@@ -79,7 +79,39 @@ document.getElementById("filters").querySelectorAll("button").forEach(b=>b.oncli
 document.getElementById("search").addEventListener("input",drawProducts);
 document.getElementById("openCart").onclick=()=>document.getElementById("cart").classList.add("open");
 document.getElementById("closeCart").onclick=()=>document.getElementById("cart").classList.remove("open");
-document.getElementById("order").onsubmit=e=>{e.preventDefault();if(!Object.keys(cartItems).length){alert("Agregá al menos un producto al carrito.");return}let lines=Object.entries(cartItems).map(([id,n])=>{let p=products.find(x=>x.id===+id);return `${p.name} x${n} - ${fmt(p.price*n)}`});let total=Object.entries(cartItems).reduce((s,[id,n])=>s+products.find(p=>p.id===+id).price*n,0);let message=`PEDIDO ROSA ÍNTIMA\n${lines.join("\n")}\nTotal: ${fmt(total)}\nNombre: ${document.getElementById("name").value}\nTeléfono: ${document.getElementById("phone").value}\nDetalles: ${document.getElementById("notes").value}`;let blob=new Blob([message],{type:"text/plain;charset=utf-8"});let url=URL.createObjectURL(blob);let a=document.createElement("a");a.href=url;a.download="mi-pedido.txt";a.click();URL.revokeObjectURL(url);alert("¡Listo! Se descargó un archivo con el pedido. Cuando publiques la tienda podemos configurar WhatsApp.")};
-drawProducts();drawCart();
+
+document.getElementById("order").onsubmit=e=>{
+  e.preventDefault();
+
+  if(!Object.keys(cartItems).length){
+    alert("Agregá al menos un producto al carrito.");
+    return;
+  }
+
+  let lines=Object.entries(cartItems).map(([id,n])=>{
+    let p=products.find(x=>x.id===+id);
+    return `${p.name} x${n} - ${fmt(p.price*n)}`;
+  });
+
+  let total=Object.entries(cartItems).reduce(
+    (s,[id,n])=>s+products.find(p=>p.id===+id).price*n,0
+  );
+
+  let message=`PEDIDO ROSA ÍNTIMA
+${lines.join("\n")}
+Total: ${fmt(total)}
+Nombre: ${document.getElementById("name").value}
+Teléfono: ${document.getElementById("phone").value}
+Detalles: ${document.getElementById("notes").value}
+
+Forma de pago: a coordinar por WhatsApp.`;
+
+  let whatsapp="https://wa.me/5493364038949?text="+encodeURIComponent(message);
+  window.open(whatsapp,"_blank");
+};
+
+drawProducts();
+drawCart();
+
 </script>
 </body></html>
